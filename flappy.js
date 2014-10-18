@@ -65,21 +65,21 @@ function create() {
     //game.add.sprite(20, 0, "pipe");
 
     //var hole = Math.floor(Math.random() * 5)+1;
+var hole;
+    
 
-    for (var j = 0; j < 5; i++) {
-
-        var hole = Math.floor(Math.random() * 5)+1;
+         hole = Math.floor(Math.random() * 5)+1;
 
         for (var i = 0; i < hole; i++) {
-            game.add.sprite(j * 200, i * 50, "pipe");
+            game.add.sprite(200, i * 50, "pipe");
         }
 
         for (var i = hole + 2; i < 8; i++) {
-            game.add.sprite(i * 200, i * 50, "pipe");
+            game.add.sprite(200, i * 50, "pipe");
 
         }
 
-    }
+
 }
 /*
  * This function updates the scene. It is called for every new frame.
