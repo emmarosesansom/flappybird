@@ -8,8 +8,10 @@ var stateActions = { preload: preload, create: create, update: update };
 // - element where the game will be drawn ('game')
 // - actions on the game state (or null for nothing)
 var game = new Phaser.Game(700, 400, Phaser.AUTO, 'game', stateActions);
-var score;
+var score = 0;
 var player;
+var pipes;
+var label_score;
 
 /*
  * Loads all resources for the game and gives them names.
@@ -27,8 +29,9 @@ function preload() {
  */
 function create() {
 
-    //game.physics.startSystem(Phaser.Physics.ARCADE);
-    //game.physics.arcade.enable(player);
+
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
 
     // set the background colour of the scene
     game.stage.setBackgroundColor("#00FFFF");
@@ -40,16 +43,10 @@ function create() {
 
     game.input.onDown.add(clickHandler);
     game.add.audio("score");
-    game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(spaceHandler);
-
-    var x = 100;
-    var y = 30;
-
-    player = game.add.sprite(x, y, "playerImg");
+    game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(flap);
 
 
-    player.x = 300;
-    player.y = 300;
+
 
     //var right_key = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     //right_key.onDown.add(moveRight);
@@ -65,19 +62,26 @@ function create() {
     //game.add.sprite(20, 0, "pipe");
 
     //var hole = Math.floor(Math.random() * 5)+1;
-var hole;
-    
 
-         hole = Math.floor(Math.random() * 5)+1;
 
-        for (var i = 0; i < hole; i++) {
-            game.add.sprite(200, i * 50, "pipe");
-        }
 
-        for (var i = hole + 2; i < 8; i++) {
-            game.add.sprite(200, i * 50, "pipe");
+    pipes = game.add.group();
 
-        }
+
+
+
+
+
+    player = game.add.sprite(60, 200, "playerImg");
+    player.anchor.setTo(0.5, 0.5);
+    game.physics.arcade.enable(player);
+    player.checkWorldBounds = true;
+    player.body.gravity.y = 300;
+
+    label_score = game.add.text(20, 20, "0", { font: "30px Arial", fill: "#ffffff"})
+    //generate_pipe();
+    game.time.events.loop(1.75 * Phaser.Timer.SECOND, generate_pipe);
+
 
 
 }
@@ -85,8 +89,34 @@ var hole;
  * This function updates the scene. It is called for every new frame.
  */
 function update() {
-    
+
+
+
+    game.physics.arcade.overlap(player, pipes, game_over);
 }
+
+
+function game_over(){
+    
+    location.reload();
+
+}
+
+
+
+
+
+
+function add_pipe_part(x, y, pipe_part){
+    var pipe = pipes.create(x, y, pipe_part);
+    game.physics.arcade.enable(pipe);
+    pipe.body.velocity.x = -200;
+
+}
+
+
+
+
 
 function clickHandler(mouse) {
     player.x = mouse.x;
@@ -97,32 +127,30 @@ function clickHandler(mouse) {
 
 }
 
-function spaceHandler() {
 
-    game.sound.play("score");
-    // Fill in the body - play sound
-}
 
-function moveLeft(){
+function flap()
+{
+    player.body.velocity.y = - 150;
 
-    player.x -= 20;
 
 }
 
-function moveRight(){
+function generate_pipe() {
 
-    player.x +=20;
+    var hole = Math.floor(Math.random() * 5) + 1;
+
+    for (var i = 0; i < hole; i++) {
+        add_pipe_part(900, i * 50, "pipe");
+    }
+
+    for (var i = hole + 2; i < 8; i++) {
+        add_pipe_part(900, i * 50, "pipe");
+
+    }
+
+    score++;
+    label_score.setText(score);
 
 }
 
-function moveUp(){
-
-    player.y -= 20;
-
-}
-
-function moveDown(){
-
-    player.y += 20;
-
-}
